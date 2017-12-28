@@ -36,11 +36,11 @@ int main(int argc, char const *argv[])
 	cl_int err;
 	cl_uint num_devices,num_platforms;
 	cl_device_id device;
-	cl_platform_id platform_id;
+	cl_platform_id platform;
 
 	
-	clGetPlatformIDs(1,&platform_id,&num_platforms);
-	err=clGetDeviceIDs(platform_id,CL_DEVICE_TYPE_GPU,1,&device,&num_devices);
+	clGetPlatformIDs(1,&platform,&num_platforms);
+	err=clGetDeviceIDs(platform,CL_DEVICE_TYPE_GPU,1,&device,&num_devices);
 	cl_context myctx=clCreateContext(NULL,1,&device,NULL,NULL,&err);
 	cl_command_queue myqueue=clCreateCommandQueue(myctx,device,0,&err);
 	
@@ -59,8 +59,8 @@ int main(int argc, char const *argv[])
 	clSetKernelArg(mykernel,1,sizeof(cl_mem),&result_gpu);
 	clSetKernelArg(mykernel,2,sizeof(unsigned int),&input_size);
 	
-	size_t worksize=768;
-	err=clEnqueueNDRangeKernel(myqueue,mykernel,1,0,&worksize,0,0,NULL,NULL);
+	size_t gsize=768;
+	err=clEnqueueNDRangeKernel(myqueue,mykernel,1,0,&gsize,0,0,NULL,NULL);
 	err=clEnqueueReadBuffer(myqueue,result_gpu,CL_TRUE,0,sizeof(unsigned int)*256*3,result,NULL,NULL,NULL);
 
 	for(unsigned int i = 0; i < 256 * 3; ++i) {
